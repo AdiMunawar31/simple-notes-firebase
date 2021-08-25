@@ -7,7 +7,7 @@ export default function Layout({ children, title }) {
         document.title = `${title}`
     })
     return (
-        <div className="w-screen">
+        <div>
             <Navbar />
             {children}
             <Footer />

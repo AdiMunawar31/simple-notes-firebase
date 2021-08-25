@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export default function Navbar() {
     return (
-        <div className="w-screen hidden md:flex flex-row items-center p-3 md:p-1 justify-between bg-gradient-to-bl from-blue-500 to-blue-700 shadow-md">
+        <div className="hidden md:flex flex-row items-center p-3 md:p-1 justify-between bg-gradient-to-bl from-blue-500 to-blue-700 shadow-md">
             <div className="ml-8 text-gray-700 hidden md:flex">
                 <span className="font-bold text-yellow-200 text-lg mx-10">REACT-FIREBASE</span>
                 <Link to="/" className="font-medium text-sm mx-3 mt-1 text-gray-100 hover:text-yellow-200">HOME</Link>

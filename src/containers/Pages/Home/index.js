@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { userImg } from '../../../assets'
 import { Layout } from '../../../components'
-import { addNotesAPI } from '../../../config/redux'
+import { addNotesAPI, getNotesAPI } from '../../../config/redux'
 
 class Home extends Component {
     state = {
@@ -10,15 +10,20 @@ class Home extends Component {
         content: '',
     }
 
+    componentDidMount() {
+        const userData = JSON.parse(localStorage.getItem('USERDATA'))
+        this.props.getNotes(userData.uid)
+    }
 
     save = () => {
         const { title, content } = this.state
+        const userData = JSON.parse(localStorage.getItem('USERDATA'))
 
         const data = {
             title: title,
             content: content,
             date: new Date().getTime(),
-            userId: this.props.userData.uid
+            userId: userData.uid
         }
 
         this.props.addNotes(data)
@@ -63,7 +68,7 @@ class Home extends Component {
                                 <div className="flex">
                                     <img className=" rounded-full w-10 h-10 mr-3" src={userImg} alt="profile" />
                                     <div>
-                                        <h3 className="text-md font-semibold ">Sudana Kunyung</h3>
+                                        <h3 className="text-md font-semibold text-white">Sudana Kunyung</h3>
                                         <p className="text-xs text-gray-500">31 mnt</p>
                                     </div>
                                 </div>
@@ -102,7 +107,8 @@ const reduxState = (state) => ({
 })
 
 const reduxDispatch = (dispatch) => ({
-    addNotes: (data) => dispatch(addNotesAPI(data))
+    addNotes: (data) => dispatch(addNotesAPI(data)),
+    getNotes: (data) => dispatch(getNotesAPI(data))
 })
 
 export default connect(reduxState, reduxDispatch)(Home)

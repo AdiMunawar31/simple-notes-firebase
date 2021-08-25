@@ -26,6 +26,8 @@ class Login extends Component {
       const res = await this.props.loginAPI({ email, password })
       if (res) {
         console.log('Success :', res);
+        localStorage.setItem('USERDATA', JSON.stringify(res))
+
         this.setState({
           email: '',
           password: ''
@@ -43,7 +45,7 @@ class Login extends Component {
   render() {
     return (
       <Layout title="Login">
-        <div className="w-screen h-full my-40 flex justify-center">
+        <div className="h-full my-40 flex justify-center">
           <form className="rounded flex justify-center items-center flex-col" onSubmit={this.Submit}>
             <p className="mb-5 text-3xl uppercase text-yellow-200">Login</p>
 

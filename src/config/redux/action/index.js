@@ -61,3 +61,16 @@ export const addNotesAPI = (data) => (dispatch) => {
         date: data.date
     });
 }
+
+export const getNotesAPI = (userId) => (dispatch) => {
+    let urlNotes = database.ref(`notes/${userId}`)
+    return new Promise((resolve, reject) => {
+        urlNotes.on('value', function (snapshot) {
+            console.log('Get data : ', snapshot.val());
+
+            dispatch({ type: 'CHANGE_NOTES', value: snapshot.val() })
+            resolve(snapshot.val())
+        })
+
+    })
+}

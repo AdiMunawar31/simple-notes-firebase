@@ -44,7 +44,7 @@ class Register extends Component {
     render() {
         return (
             <Layout title="Register">
-                <div className="w-screen h-full my-40 flex justify-center">
+                <div className="h-full my-40 flex justify-center">
                     <form className="rounded flex justify-center items-center flex-col" onSubmit={this.Submit}>
                         <p className="mb-5 text-3xl uppercase text-yellow-200">Register</p>
 
