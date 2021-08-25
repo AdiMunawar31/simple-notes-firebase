@@ -68,7 +68,14 @@ export const getNotesAPI = (userId) => (dispatch) => {
         urlNotes.on('value', function (snapshot) {
             console.log('Get data : ', snapshot.val());
 
-            dispatch({ type: 'CHANGE_NOTES', value: snapshot.val() })
+            const data = []
+            Object.keys(snapshot.val()).map((key) => {
+                data.push({
+                    id: key,
+                    data: snapshot.val()[key]
+                })
+            })
+            dispatch({ type: 'CHANGE_NOTES', value: data })
             resolve(snapshot.val())
         })
 
