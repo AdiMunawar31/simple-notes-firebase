@@ -76,8 +76,33 @@ export const getNotesAPI = (userId) => (dispatch) => {
                 })
             })
             dispatch({ type: 'CHANGE_NOTES', value: data })
-            resolve(snapshot.val())
+            resolve(true)
         })
+
+    })
+}
+
+export const updateNotesAPI = (data) => (dispatch) => {
+    let urlNotes = database.ref(`notes/${data.userId}/${data.noteId}`)
+    return new Promise((resolve, reject) => {
+        urlNotes.set({
+            title: data.title,
+            content: data.content,
+            date: data.date
+        }, (err) => {
+            if (err) {
+                reject(false)
+            }
+            resolve(true)
+        })
+
+    })
+}
+
+export const deleteNotesAPI = (data) => (dispatch) => {
+    let urlNotes = database.ref(`notes/${data.userId}/${data.noteId}`)
+    return new Promise((resolve, reject) => {
+        urlNotes.remove()
 
     })
 }

@@ -2,12 +2,15 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { userImg } from '../../../assets'
 import { Layout } from '../../../components'
-import { addNotesAPI, getNotesAPI } from '../../../config/redux'
+import { addNotesAPI, deleteNotesAPI, getNotesAPI, updateNotesAPI } from '../../../config/redux'
+import Swal from 'sweetalert2'
 
 class Home extends Component {
     state = {
         title: '',
         content: '',
+        textBtn: 'Post',
+        noteId: ''
     }
 
     componentDidMount() {
@@ -16,7 +19,8 @@ class Home extends Component {
     }
 
     save = () => {
-        const { title, content } = this.state
+        const { title, content, textBtn, noteId } = this.state
+        const { addNotes, updateNotes } = this.props
         const userData = JSON.parse(localStorage.getItem('USERDATA'))
 
         const data = {
@@ -26,8 +30,19 @@ class Home extends Component {
             userId: userData.uid
         }
 
-        this.props.addNotes(data)
+        if (textBtn === 'Post') {
+            addNotes(data)
+        } else {
+            data.noteId = noteId
+            updateNotes(data)
+        }
+
+
         console.log(data);
+        this.setState({
+            title: '',
+            content: ''
+        })
 
     }
 
@@ -38,8 +53,56 @@ class Home extends Component {
         })
     }
 
+
+    updateNote = (note) => {
+        console.log('Notes : ' + note);
+        this.setState({
+            title: note.data.title,
+            content: note.data.content,
+            textBtn: 'Update',
+            noteId: note.id
+        })
+    }
+
+    cancel = () => {
+        this.setState({
+            title: '',
+            content: '',
+            textBtn: 'Post'
+        })
+    }
+
+    delete = (e, note) => {
+        e.stopPropagation()
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const userData = JSON.parse(localStorage.getItem('USERDATA'))
+                const data = {
+                    userId: userData.uid,
+                    noteId: note.id
+                }
+                this.props.deleteNotes(data)
+                Swal.fire(
+                    'Deleted!',
+                    'Your post has been deleted.',
+                    'success'
+                )
+            } else {
+                return false
+            }
+        })
+    }
+
     render() {
-        const { title, content } = this.state
+        const { title, content, textBtn } = this.state
         const { notes } = this.props
         console.log('Notes : ', notes);
 
@@ -57,7 +120,13 @@ class Home extends Component {
                                 <textarea className="description bg-gray-700 sec p-3 h-60 border border-gray-300 outline-none" spellCheck="false" placeholder="Describe everything about this post here" value={content} onChange={(e) => this.onInputChange(e, 'content')} />
 
                                 <div className="flex pt-5">
-                                    <button type="submit" className="btn border hover:bg-blue-400 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-blue-500" onClick={this.save}>Post</button>
+                                    {
+                                        textBtn === 'Update' ? (
+                                            <button type="submit" className="btn border hover:bg-gray-400 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-gray-500" onClick={this.cancel}>Cancel</button>
+                                        ) : null
+                                    }
+
+                                    <button type="submit" className="btn border hover:bg-blue-400 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-blue-500" onClick={this.save}><i className="fas fa-save"></i> {textBtn}</button>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +139,7 @@ class Home extends Component {
                                     {
                                         notes.map(note => {
                                             return (
-                                                <div key={note.id} className="bg-gray-800 w-full rounded-md shadow-md h-auto py-3 px-3 my-5">
+                                                <div key={note.id} className="bg-gray-800 cursor-pointer w-full rounded-md shadow-md h-auto py-3 px-3 my-5" onClick={() => this.updateNote(note)}>
 
                                                     <div className="w-full h-16 items-center flex justify-between ">
                                                         <div className="flex">
@@ -80,7 +149,10 @@ class Home extends Component {
                                                                 <p className="text-xs text-gray-500">31 mnt</p>
                                                             </div>
                                                         </div>
-                                                        <svg className="w-16" xmlns="http://www.w3.org/2000/svg" width={27} height={27} viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth={2} strokeLinecap="square" strokeLinejoin="round"><circle cx={12} cy={12} r={1} /><circle cx={19} cy={12} r={1} /><circle cx={5} cy={12} r={1} /></svg>
+
+                                                        <div className="bg-red-500 py-1 px-2 rounded-full mr-5" onClick={(e) => this.delete(e, note)}>
+                                                            <i className="fas fa-trash text-white text-center"></i>
+                                                        </div>
                                                     </div>
 
                                                     <p>{note.data.content}</p>
@@ -122,7 +194,9 @@ const reduxState = (state) => ({
 
 const reduxDispatch = (dispatch) => ({
     addNotes: (data) => dispatch(addNotesAPI(data)),
-    getNotes: (data) => dispatch(getNotesAPI(data))
+    getNotes: (data) => dispatch(getNotesAPI(data)),
+    updateNotes: (data) => dispatch(updateNotesAPI(data)),
+    deleteNotes: (data) => dispatch(deleteNotesAPI(data)),
 })
 
 export default connect(reduxState, reduxDispatch)(Home)
